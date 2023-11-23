@@ -1,5 +1,6 @@
 import express from 'express';
 import {MongoClient} from 'mongodb';
+import path from 'path';
 
 async function start(){
 
@@ -12,13 +13,15 @@ async function start(){
     const app = express();
     app.use(express.json());
 
-    app.get("/products", async (req, res) => {
+    app.use('/images', express.static(path.join(__dirname, '../assets')));
+
+    app.get("/api/products", async (req, res) => {
         const products = await db.collection('products').find({}).toArray();
         res.json(products);
     });
 
 
-    app.get("/product/:productId", async (req, res) => {
+    app.get("/api/product/:productId", async (req, res) => {
         const productId = req.params.productId;
         const product = await db.collection('products').findOne({id: productId});
         res.json(product);
@@ -28,26 +31,31 @@ async function start(){
         return Promise.all(ids.map(id => db.collection('products').findOne({id})));
     }
 
-    app.get("/users/:userId/cart", async (req, res) => {
+    app.get("/api/users/:userId/cart", async (req, res) => {
         const users = await db.collection('users').findOne({id: req.params.userId});
-        const populatedCart = await populateCartIds(users.cartItems);
+        const populatedCart = await populateCartIds(users?.cartItems);
         res.json(populatedCart);
     });
 
-    app.post("/users/:userId/cart", async (req, res) => {
+    app.post("/api/users/:userId/cart", async (req, res) => {
         const userId = req.params.userId;
         const productId = req.body.id;
+
+        const users = await db.collection('users').findOne({id: userId});
+
+        if(!user){
+            await db.collection('users').insertOne({id: userId}, {cartItems: []});
+        }
         
         await db.collection('users').updateOne({id: userId}, {
             $addToSet: {cartItems: productId}
         })
-
-        const users = await db.collection('users').findOne({id: userId});
-        const populatedCart = await populateCartIds(users.cartItems);
+ 
+        const populatedCart = await populateCartIds(users?.cartItems);
         res.json(populatedCart);
     });
 
-    app.delete("/users/:userId/cart/:productId", async (req, res) => {
+    app.delete("/api/users/:userId/cart/:productId", async (req, res) => {
         const userId = req.params.userId;
         const productId = req.params.productId;
 
@@ -56,7 +64,7 @@ async function start(){
         })
 
         const users = await db.collection('users').findOne({id: userId});
-        const populatedCart = await populateCartIds(users.cartItems);
+        const populatedCart = await populateCartIds(users?.cartItems);
         res.json(populatedCart);
     });
 

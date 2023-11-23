@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import {products} from '../temp-data'
 import ProductList from '@/components/ProductList.vue';
 import axios from 'axios';
 
@@ -13,7 +12,7 @@ export default {
   name: 'ProductPage',
   data () {
     return {
-      products,
+      products: [],
     }
   },
   components: {
