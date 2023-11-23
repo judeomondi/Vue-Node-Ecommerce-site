@@ -43,7 +43,7 @@ async function start(){
 
         const users = await db.collection('users').findOne({id: userId});
 
-        if(!user){
+        if(!users){
             await db.collection('users').insertOne({id: userId}, {cartItems: []});
         }
         
