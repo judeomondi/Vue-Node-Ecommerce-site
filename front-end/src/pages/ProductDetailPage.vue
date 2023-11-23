@@ -59,7 +59,7 @@ export default {
           const email = prompt('Enter your email to sign in');
           const auth = getAuth();
           const actionCodeSettings = {
-            url: `http://localhost:8080/product/${this.$route.params.productId}`,
+            url: `https://two-trees-deployment.onrender.com/product/${this.$route.params.productId}`,
             handleCodeInApp: true
           }
           await sendSignInLinkToEmail(auth, email, actionCodeSettings);
