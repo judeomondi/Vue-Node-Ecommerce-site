@@ -4,7 +4,7 @@ import path, { dirname } from 'path';
 
 async function start(){
 
-    const url = `mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1`;
+    const url = `mongodb+srv://judeomondi:Motionpics01@cluster32623.yvgcc6q.mongodb.net/`;
     const client = new MongoClient(url);
 
     await client.connect();
